@@ -51,6 +51,22 @@ def get_text_that_says_which_task_user_stopped (task_number: int) -> str:
     return random.choice (texts_for_users["you_stopped_at_task"]) + str (task_number)
 
 
+def get_text_that_says_answer_is_correct ( ) -> str:
+    return random.choice (texts_for_users["correct_answer"])
+
+
+def get_text_that_says_answer_is_wrong ( ) -> str:
+    return random.choice (texts_for_users["wrong_answer"])
+
+
+def get_text_that_says_there_is_no_answer_like_that ( ) -> str:
+    return random.choice (texts_for_users["there_is_no_answer_like_that"])
+
+
+def get_text_that_suggests_to_continue_or_change_difficulty_level ( ) -> str:
+    return random.choice (texts_for_users["continue_or_change_difficulty_level"])
+
+
 def create_buttons (*button_texts: str) -> list:
     ready_buttons = [ ]
     for text_of_button in button_texts:

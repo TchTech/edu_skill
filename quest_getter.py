@@ -25,16 +25,17 @@ class QuestGetter:
     def _group_quests (self) -> None:
         self._create_empty_grouped_quests ( )
         for key in self.all_quests.keys():
-            if self.all_quests[key]["difficulty_level"] == DifficultyLevelsOfQuest.EASY.value:
-                self.easy_quests.append (self.all_quests[key])
-            elif self.all_quests[key]["difficulty_level"] == DifficultyLevelsOfQuest.MEDIUM.value:
-                self.medium_quests.append (self.all_quests[key])
-            elif self.all_quests[key]["difficulty_level"] == DifficultyLevelsOfQuest.HARD.value:
-                self.hard_quests.append (self.all_quests[key])
-            else:
-                raise ValueError ("Указан неверный уровень сложности " +
-                                 f"в файле {self._name_of_file_with_quests}\n." +
-                                 f"Номер неправильного квеста: {key}.")
+            match self.all_quests[key]["difficulty_level"]:
+                case DifficultyLevelsOfQuest.EASY.value:
+                    self.easy_quests.append (self.all_quests[key])
+                case DifficultyLevelsOfQuest.MEDIUM.value:
+                    self.medium_quests.append (self.all_quests[key])
+                case DifficultyLevelsOfQuest.HARD.value:
+                    self.hard_quests.append (self.all_quests[key])
+                case _:
+                    raise ValueError ("Указан неверный уровень сложности " +
+                                     f"в файле {self._name_of_file_with_quests}\n." +
+                                     f"Номер неправильного квеста: {key}.")
 
     def _create_empty_grouped_quests (self) -> None:
         self.easy_quests = [ ]
@@ -52,6 +53,16 @@ class QuestGetter:
         self.saved_random_hard_quest = random.choice (self.hard_quests)
 
 
+    def get_random_easy_quest (self) -> None:
+        return random.choice (self.easy_quests)
+
+    def get_random_medium_quest (self) -> None:
+        return random.choice (self.medium_quests)
+
+    def get_random_hard_quest (self) -> None:
+        return random.choice (self.hard_quests)
+
+
     @property
     def text_of_random_easy_quest (self) -> str:
         return self.saved_random_easy_quest["quest_text"]
@@ -63,6 +74,14 @@ class QuestGetter:
     @property
     def correct_answer_of_random_easy_quest (self) -> Literal[1, 2, 3]:
         return self.saved_random_easy_quest["correct_answer"] + 1 # В файле первый ответ 0, а не 1
+
+    @property
+    def answers_to_speech_of_random_easy_quest (self) -> list[str]:
+        return self.saved_random_easy_quest["answers_to_speech"]
+
+    @property
+    def answers_to_speech_of_random_easy_quest_as_str (self) -> str:
+        return " ".join (self.answers_to_speech_of_random_easy_quest)
 
     @property
     def text_of_random_medium_quest (self) -> str:
@@ -77,6 +96,14 @@ class QuestGetter:
         return self.saved_random_medium_quest["correct_answer"] + 1 # В файле первый ответ 0, а не 1
 
     @property
+    def answers_to_speech_of_random_medium_quest (self) -> list[str]:
+        return self.saved_random_medium_quest["answers_to_speech"]
+
+    @property
+    def answers_to_speech_of_random_medium_quest_as_str (self) -> str:
+        return " ".join (self.answers_to_speech_of_random_medium_quest)
+
+    @property
     def text_of_random_hard_quest (self) -> str:
         return self.saved_random_hard_quest["quest_text"]
 
@@ -87,6 +114,14 @@ class QuestGetter:
     @property
     def correct_answer_of_random_hard_quest (self) -> Literal[1, 2, 3]:
         return self.saved_random_hard_quest["correct_answer"] + 1 # В файле первый ответ 0, а не 1
+
+    @property
+    def answers_to_speech_of_random_hard_quest (self) -> list[str]:
+        return self.saved_random_hard_quest["answers_to_speech"]
+
+    @property
+    def answers_to_speech_of_random_hard_quest_as_str (self) -> str:
+        return " ".join (self.answers_to_speech_of_random_hard_quest)
 
 
     def _get_prepared_quest_text_for_user (self, quest: dict) -> str:

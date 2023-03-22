@@ -10,8 +10,13 @@ def create_sessional_data (sessional_data: dict) -> dict:
                 "text_of_quest": "",
                 "correct_answer_of_quest": 0,
                 "difficulty_level": 0,
+                "number_of_correct_quest_answers": 0,
+                "number_of_wrong_quest_answers": 0,
+                "viewing_quest_results": False,
+                "was_said_that_user_can_change_difficulty_level": False,
                 "working_with_tasks": False,
-                "working_with_report": False
+                "sending_report": False,
+                "consulting": False
                 }
     else: # Значит, сообщение уже не первое
         return sessional_data
