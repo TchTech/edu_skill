@@ -213,9 +213,12 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_quest"] = False
             self._SESSIONAL_DATA["choosing_right_answer_for_quest"] = True
             self._save_text_and_correct_answer_of_easy_quest_in_session_data ( )
-            self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            well = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            self._OUTPUT_TEXT = well
+            self._TEXT_TO_SPEECH = well
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
+            self._TEXT_TO_SPEECH += self._get_text_of_current_quest ( )
             self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
@@ -225,9 +228,12 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_quest"] = False
             self._SESSIONAL_DATA["choosing_right_answer_for_quest"] = True
             self._save_text_and_correct_answer_of_medium_quest_in_session_data ( )
-            self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            well = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            self._OUTPUT_TEXT = well
+            self._TEXT_TO_SPEECH = well
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
+            self._TEXT_TO_SPEECH += self._get_text_of_current_quest ( )
             self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (  
@@ -237,9 +243,12 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_quest"] = False
             self._SESSIONAL_DATA["choosing_right_answer_for_quest"] = True
             self._save_text_and_correct_answer_of_hard_quest_in_session_data ( )
-            self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            well = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            self._OUTPUT_TEXT = well
+            self._TEXT_TO_SPEECH = well
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
+            self._TEXT_TO_SPEECH += self._get_text_of_current_quest ( )
             self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
@@ -253,9 +262,12 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_quest"] = False
             self._SESSIONAL_DATA["choosing_right_answer_for_quest"] = True
             self._save_text_and_correct_answer_of_quest_in_session_data (difficulty_level)
-            self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            well = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
+            self._OUTPUT_TEXT = well
+            self._TEXT_TO_SPEECH = well
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
+            self._TEXT_TO_SPEECH += self._get_text_of_current_quest ( )
             self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower ("результат", "результаты"):
@@ -276,21 +288,21 @@ class HandlerOfAlisa:
         quest_getter.save_random_easy_quest ( )
         self._SESSIONAL_DATA["text_of_quest"] = quest_getter.prepared_text_of_random_easy_quest
         self._SESSIONAL_DATA["correct_answer_of_quest"] = quest_getter.correct_answer_of_random_easy_quest
-        self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_easy_quest_as_str
+        #self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_easy_quest_as_str
 
     def _save_text_and_correct_answer_of_medium_quest_in_session_data (self) -> None:
         quest_getter = QuestGetter ( )
         quest_getter.save_random_medium_quest ( )
         self._SESSIONAL_DATA["text_of_quest"] = quest_getter.prepared_text_of_random_medium_quest
         self._SESSIONAL_DATA["correct_answer_of_quest"] = quest_getter.correct_answer_of_random_medium_quest
-        self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_medium_quest_as_str
+        #self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_medium_quest_as_str
 
     def _save_text_and_correct_answer_of_hard_quest_in_session_data (self) -> None:
         quest_getter = QuestGetter ( )
         quest_getter.save_random_hard_quest ( )
         self._SESSIONAL_DATA["text_of_quest"] = quest_getter.prepared_text_of_random_hard_quest
         self._SESSIONAL_DATA["correct_answer_of_quest"] = quest_getter.correct_answer_of_random_hard_quest
-        self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_hard_quest_as_str
+        #self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_hard_quest_as_str
 
     def _save_text_and_correct_answer_of_quest_in_session_data (self, difficulty_level: int) -> None:
         match difficulty_level:
@@ -305,10 +317,14 @@ class HandlerOfAlisa:
 
     def _say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet (self) -> None:
         if not self._SESSIONAL_DATA["was_said_that_user_can_change_difficulty_level"]:
-            self._OUTPUT_TEXT += "В любой момент вы можете сменить уровень сложности, сказав: \"Хочу сменить сложность\";\n"
-            self._OUTPUT_TEXT += "или выйти на главное меню, сказав: \"На главное меню\".\n"
-            self._OUTPUT_TEXT += "Так же вы можете узнать количество правильно отвеченных вопросов, сказав: \"Покажи результаты\".\n"
-            self._OUTPUT_TEXT += "Вот квест.\n\n"
+            text = [
+            "В любой момент вы можете сменить уровень сложности, сказав: \"Хочу сменить сложность\";\n",
+            "или выйти на главное меню, сказав: \"На главное меню\".\n",
+            "Так же вы можете узнать количество правильно отвеченных вопросов, сказав: \"Покажи результаты\".\n",
+            "Вот квест.\n\n"
+            ]
+            self._OUTPUT_TEXT += "".join (text)
+            self._TEXT_TO_SPEECH += "".join (text)
             self._SESSIONAL_DATA["was_said_that_user_can_change_difficulty_level"] = True
 
     def _get_text_of_current_quest (self) -> str:
@@ -360,10 +376,13 @@ class HandlerOfAlisa:
             self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
     def _correct_answer_of_quest_is_selected (self) -> None:
-        self._OUTPUT_TEXT = get_text_that_says_answer_is_correct ( ) + "\n\n"
+        text_that_says_answer_is_correct = get_text_that_says_answer_is_correct ( ) + "\n\n"
+        self._OUTPUT_TEXT = text_that_says_answer_is_correct
+        self._TEXT_TO_SPEECH = text_that_says_answer_is_correct
         current_difficulty_level = self._SESSIONAL_DATA["difficulty_level"]
         self._save_text_and_correct_answer_of_quest_in_session_data (current_difficulty_level)
         self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
+        self._TEXT_TO_SPEECH += self._get_text_of_current_quest ( )
         self._SESSIONAL_DATA["number_of_correct_quest_answers"] += 1
         self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 

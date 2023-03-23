@@ -76,6 +76,10 @@ class QuestGetter:
         return self.saved_random_easy_quest["correct_answer"] + 1 # В файле первый ответ 0, а не 1
 
     @property
+    def answers_of_random_easy_quest_as_str (self) -> list[str]:
+        return ", ".join (self.saved_random_easy_quest["answers"] )
+
+    @property
     def answers_to_speech_of_random_easy_quest (self) -> list[str]:
         return self.saved_random_easy_quest["answers_to_speech"]
 
@@ -96,6 +100,10 @@ class QuestGetter:
         return self.saved_random_medium_quest["correct_answer"] + 1 # В файле первый ответ 0, а не 1
 
     @property
+    def answers_of_random_medium_quest_as_str (self) -> list[str]:
+        return ", ".join (self.saved_random_medium_quest["answers"] )
+
+    @property
     def answers_to_speech_of_random_medium_quest (self) -> list[str]:
         return self.saved_random_medium_quest["answers_to_speech"]
 
@@ -114,6 +122,10 @@ class QuestGetter:
     @property
     def correct_answer_of_random_hard_quest (self) -> Literal[1, 2, 3]:
         return self.saved_random_hard_quest["correct_answer"] + 1 # В файле первый ответ 0, а не 1
+
+    @property
+    def answers_of_random_hard_quest_as_str (self) -> list[str]:
+        return ", ".join (self.saved_random_hard_quest["answers"] )
 
     @property
     def answers_to_speech_of_random_hard_quest (self) -> list[str]:
