@@ -67,17 +67,6 @@ def get_text_that_suggests_to_continue_or_change_difficulty_level ( ) -> str:
     return random.choice (texts_for_users["continue_or_change_difficulty_level"])
 
 
-def create_buttons (*button_texts: str) -> list:
-    ready_buttons = [ ]
-    for text_of_button in button_texts:
-        ready_buttons.append ({"title": text_of_button, "hide": True})
-    return ready_buttons
-
-
-def create_buttons_of_main_menu ( ) -> list:
-    return create_buttons (*get_main_commands_of_skill_as_list ( ))
-
-
 def get_apology_text ( ) -> str:
     return random.choice (texts_for_users["something_is_unclear"])
     # Выбирается одно случайное извинение от Алисы, если она что-то не поняла.

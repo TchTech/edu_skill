@@ -36,9 +36,39 @@ def create_intersessional_data (intersessional_data: dict) -> dict:
 def get_user_greeting ( ) -> str:
     hello_text = get_hello_text ( ) + "\n"
     hello_text += get_text_asking_if_user_has_forgotten_commands ( ) + "\n"
-    hello_text += get_main_commands_of_skill ( )
+    #hello_text += get_main_commands_of_skill ( )
     return hello_text
 
 
 def get_text_that_says_user_is_just_in_main_menu ( ) -> str:
-    return "Вы на главном меню!\nМои основные команды:\n" + get_main_commands_of_skill ( )
+    return "Вы на главном меню!\nМои основные команды:"
+
+
+def create_buttons (*button_texts: str) -> list[dict]:
+    ready_buttons = [ ]
+    for text_of_button in button_texts:
+        ready_buttons.append ({"title": text_of_button, "hide": True})
+    return ready_buttons
+
+def create_buttons_in_text (*button_texts: str) -> list[dict]:
+    ready_buttons = [ ]
+    for text_of_button in button_texts:
+        ready_buttons.append ({"title": text_of_button, "hide": False})
+    return ready_buttons
+
+
+def create_buttons_of_main_menu ( ) -> list:
+    return create_buttons (*get_main_commands_of_skill_as_list ( ))
+
+def create_buttons_of_main_menu_in_text ( ) -> list:
+    return create_buttons_in_text (*get_main_commands_of_skill_as_list ( ))
+
+
+def calculate_python_knowledge (number_of_correct_answers: int,
+                                number_of_wrong_answers: int) -> float:
+    if number_of_correct_answers == number_of_wrong_answers:
+        python_knowledge = 50 # 50% знания Python
+    else:
+        python_knowledge = number_of_correct_answers / (number_of_correct_answers + number_of_wrong_answers) * 100
+
+    return round (python_knowledge, 1)

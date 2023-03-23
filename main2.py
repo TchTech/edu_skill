@@ -3,6 +3,7 @@ import random
 from json_manager import *
 from useful_functions import *
 from quest_getter import QuestGetter
+from buttons import Buttons
 from enums import *
 
 
@@ -17,7 +18,7 @@ class HandlerOfAlisa:
         self._SESSIONAL_DATA: dict = create_sessional_data (request["state"]["session"])
         self._INTERSESSIONAL_DATA: dict = create_intersessional_data (request["state"]["user"])
         self._TEXT_TO_SPEECH = ""
-        self._BUTTONS = [ ]
+        self._BUTTONS = Buttons ( )
         self._working_with_user ( )
 
 
@@ -25,18 +26,26 @@ class HandlerOfAlisa:
         # Абсолютно новый пользователь
         if self._INTERSESSIONAL_DATA["new_user"]:
             self._OUTPUT_TEXT = get_text_for_new_user ( )
+            self._TEXT_TO_SPEECH = get_text_for_new_user ( ) + "\n"
+            self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
             self._INTERSESSIONAL_DATA["new_user"] = False
-            self._BUTTONS = create_buttons_of_main_menu ( )
+            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
 
         # Пользователь в главном меню впервые
         elif self._user_is_in_main_menu and self._IS_FIRST_MESSAGE:
-            self._OUTPUT_TEXT = get_user_greeting ( )
-            self._BUTTONS = create_buttons_of_main_menu ( )
+            user_greeting = get_user_greeting ( )
+            self._OUTPUT_TEXT = user_greeting
+            self._TEXT_TO_SPEECH = user_greeting
+            self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
+            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
 
         # Пользователь просто в главном меню
         elif self._user_is_in_main_menu:
-            self._OUTPUT_TEXT = get_text_that_says_user_is_just_in_main_menu ( )
-            self._BUTTONS = create_buttons_of_main_menu ( )
+            text_that_says_user_is_just_in_main_menu = get_text_that_says_user_is_just_in_main_menu ( )
+            self._OUTPUT_TEXT = text_that_says_user_is_just_in_main_menu
+            self._TEXT_TO_SPEECH = text_that_says_user_is_just_in_main_menu
+            self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
+            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
             self._working_with_user_in_main_menu ( )
 
         # Пользователь не в главном меню
@@ -55,13 +64,16 @@ class HandlerOfAlisa:
 
 
     def _working_with_user_in_main_menu (self) -> None:
+        self._BUTTONS.remove_all_buttons ( )
+        self._TEXT_TO_SPEECH = ""
         # Пока навык в разработке
         if self._has_all_words_in_text_in_lower ("сбрось", "настройки") or \
            self._has_all_words_in_text_in_lower ("сбросить", "настройки"):
             self._INTERSESSIONAL_DATA["new_user"] = True
             self._INTERSESSIONAL_DATA["last_lesson"] = 0
             self._INTERSESSIONAL_DATA["last_task"] = 0
-            self._OUTPUT_TEXT = "Настройки сброшены."
+            self._OUTPUT_TEXT = "Настройки сброшены.\n"
+            self._OUTPUT_TEXT = "Перезагрузите навык."
 
         elif self._has_one_word_in_text_in_lower (
                 "курс", "курса", "курсу", "курсом", "курсе"):
@@ -74,7 +86,7 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_course"] = True
             self._OUTPUT_TEXT = "Пока \"Курс\" ничего не умеет...\n"
             self._OUTPUT_TEXT += "Может, на главное меню?"
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
                 "задачка", "задачки", "задачку", "задачке", "задачкой",
@@ -84,32 +96,30 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_tasks"] = True
             self._OUTPUT_TEXT = "Пока \"Задачка\" ничего не умеет...\n"
             self._OUTPUT_TEXT += "Может, на главное меню?"
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
                 "квест", "квеста", "квесту", "квестом", "квесте"):
             # Просто доделать
             self._SESSIONAL_DATA["working_with_quest"] = True
             self._OUTPUT_TEXT = "Какой уровень сложности вы предпочитаете?\n"
-            self._OUTPUT_TEXT += "Лёгкий.\n"
-            self._OUTPUT_TEXT += "Средний.\n"
-            self._OUTPUT_TEXT += "Высокий.\n"
-            self._OUTPUT_TEXT += "Случайный.\n"
-            self._BUTTONS = self._buttons_for_choosing_difficutly_level
+            self._TEXT_TO_SPEECH = "Какой уровень сложности вы предпочитаете?\n"
+            self._TEXT_TO_SPEECH += f"{', '.join (self._difficulty_levels)}"
+            self._BUTTONS.add_buttons (*self._difficulty_levels, hide_all = False)
+            self._BUTTONS.add_buttons ("Узнать мои результаты", "На главное меню", "Пока", hide_all = True)
 
         elif self._has_all_words_in_text_in_lower ("на", "урок"):
             self._SESSIONAL_DATA["working_with_course"] = True
-            self._OUTPUT_TEXT = "Пока \"Перейти на N урок\" ничего не умеет...\n"
+            self._OUTPUT_TEXT = "Пока \"Перейти на урок\" ничего не умеет...\n"
             self._OUTPUT_TEXT += "Может, на главное меню?"
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
-        elif self._has_one_word_in_text_in_lower ("пожаловаться", "жалоба") or \
-             self._has_all_words_in_text_in_lower ("отправить", "отчёт") or \
-             self._has_all_words_in_text_in_lower ("отправить", "жалобу"):
+        elif self._has_one_word_in_text_in_lower (
+                "пожаловаться", "жалоба", "жалобу", "отчёт", "отчет"):
             self._SESSIONAL_DATA["sending_report"] = True
             self._OUTPUT_TEXT = "Я не знаю, на какую почту отправлять жалобу...\n"
             self._OUTPUT_TEXT += "Может, на главное меню?"
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
                 "консультант", "консультанта", "консультанту", "консультантом", "консультанте"
@@ -117,12 +127,12 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["consulting"] = True
             self._OUTPUT_TEXT = "Пока я не могу вас проконсультировать, извините...\n"
             self._OUTPUT_TEXT += "Может, на главное меню?"
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
         elif self._has_all_words_in_text_in_lower ("оцени", "знания"):
             self._OUTPUT_TEXT = "Зачем \"Оцени мои знания\", когда есть \"Квест\"?\n"
             self._OUTPUT_TEXT += "Скажи \"Квест\", чтобы его попробовать."
-            self._BUTTONS = create_buttons_of_main_menu ( )
+            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
 
         elif self._user_wants_to_go_to_main_menu:
             self._OUTPUT_TEXT = "Вы уже на главном меню!"
@@ -134,9 +144,12 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT = get_apology_text ( )
 
     @property
+    def _difficulty_levels (self) -> tuple[str, str, str, str]:
+        return "Лёгкий", "Средний", "Высокий", "Случайный"
+
+    @property
     def _buttons_for_choosing_difficutly_level (self) -> dict:
-        return create_buttons ("Лёгкий", "Средний", "Высокий", "Случайный",
-                               "Узнать мои результаты", "На главное меню", "Пока!")
+        return "Лёгкий", "Средний", "Высокий", "Случайный", "Узнать мои результаты", "На главное меню", "Пока!"
 
 
     def _working_with_user_outside_main_menu (self) -> None:
@@ -165,7 +178,7 @@ class HandlerOfAlisa:
 
         else:
             self._OUTPUT_TEXT = get_apology_text ( )
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
     @property
     def _user_wants_to_go_to_main_menu (self) -> bool:
@@ -190,7 +203,7 @@ class HandlerOfAlisa:
 
         else:
             self._OUTPUT_TEXT = get_apology_text ( )
-            self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+            self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
     def _working_with_quest (self) -> None:
         if self._has_one_word_in_text_in_lower (
@@ -203,7 +216,7 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
-            self._BUTTONS = self._buttons_for_choosing_correct_answer
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
                 "средний", "среднего", "среднему", "среднем",
@@ -215,7 +228,7 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
-            self._BUTTONS = self._buttons_for_choosing_correct_answer
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (  
                 "высокий", "высокого", "высокому", "высоким", "высоком",
@@ -227,7 +240,7 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
-            self._BUTTONS = self._buttons_for_choosing_correct_answer
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
                 "случайный", "случайного", "случайному", "случайным", "случайном",
@@ -243,7 +256,7 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.", "Прекрасно.")) + "\n\n"
             self._say_that_user_can_change_their_difficulty_level_if_it_is_not_said_yet ( )
             self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
-            self._BUTTONS = self._buttons_for_choosing_correct_answer
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower ("результат", "результаты"):
             self._show_results_of_quest_and_next_quest ( )
@@ -256,7 +269,7 @@ class HandlerOfAlisa:
 
         else:
             self._OUTPUT_TEXT = get_apology_text ( )
-            self._BUTTONS = self._buttons_for_choosing_difficutly_level
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_difficutly_level, hide_all = True)
 
     def _save_text_and_correct_answer_of_easy_quest_in_session_data (self) -> None:
         quest_getter = QuestGetter ( )
@@ -303,7 +316,7 @@ class HandlerOfAlisa:
 
     @property
     def _buttons_for_choosing_correct_answer (self) -> dict:
-        return create_buttons ("Первое", "Второе", "Третье", "Изменить уровень сложности", "Узнать мои результаты", "На главное меню", "Пока!")
+        return "Первое", "Второе", "Третье", "Изменить уровень сложности", "Узнать мои результаты", "На главное меню", "Пока!"
 
 
     def _choosing_right_answer_for_quest (self) -> None:
@@ -331,7 +344,7 @@ class HandlerOfAlisa:
             self._SESSIONAL_DATA["working_with_quest"] = True
             self._OUTPUT_TEXT = random.choice (("Хорошо.", "Отлично.")) + "\n"
             self._OUTPUT_TEXT += "Теперь просто скажите нужный уровень сложности."
-            self._BUTTONS = self._buttons_for_choosing_difficutly_level
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_difficutly_level, hide_all = True)
 
         elif self._has_one_word_in_text_in_lower ("результат", "результаты"):
             self._show_results_of_quest_and_next_quest ( )
@@ -344,7 +357,7 @@ class HandlerOfAlisa:
 
         else:
             self._OUTPUT_TEXT = get_text_that_says_there_is_no_answer_like_that ( )
-            self._BUTTONS = self._buttons_for_choosing_correct_answer
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
     def _correct_answer_of_quest_is_selected (self) -> None:
         self._OUTPUT_TEXT = get_text_that_says_answer_is_correct ( ) + "\n\n"
@@ -352,31 +365,42 @@ class HandlerOfAlisa:
         self._save_text_and_correct_answer_of_quest_in_session_data (current_difficulty_level)
         self._OUTPUT_TEXT += self._get_text_of_current_quest ( )
         self._SESSIONAL_DATA["number_of_correct_quest_answers"] += 1
-        self._BUTTONS = self._buttons_for_choosing_correct_answer
+        self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
     def _show_results_of_quest_and_next_quest (self) -> None:
-        number_of_correct_quest_answers = int (self._SESSIONAL_DATA["number_of_correct_quest_answers"])
-        number_of_wrong_quest_answers = int (self._SESSIONAL_DATA["number_of_wrong_quest_answers"])
-        self._OUTPUT_TEXT = f"Количество правильных ответов: {number_of_correct_quest_answers}.\n"
-        self._OUTPUT_TEXT += f"Количество неправильных ответов: {number_of_wrong_quest_answers}.\n"
-        if number_of_correct_quest_answers and number_of_wrong_quest_answers:
-            self._OUTPUT_TEXT += f"Ваше знание Python - {round(number_of_correct_quest_answers/number_of_wrong_quest_answers*10, 1)}%."
-        elif number_of_correct_quest_answers and not number_of_wrong_quest_answers:
-            self._OUTPUT_TEXT += "Ваше знание Python - 100%. Поздравляю вас!"
-        self._make_all_sessional_data_false ( )
-        self._SESSIONAL_DATA["viewing_quest_results"] = True
-        self._BUTTONS = create_buttons ("Продолжить квест", "На главное меню", "Пока")
+        correct_quest_answers = int (self._SESSIONAL_DATA["number_of_correct_quest_answers"])
+        wrong_quest_answers = int (self._SESSIONAL_DATA["number_of_wrong_quest_answers"])
+        if correct_quest_answers and wrong_quest_answers:
+            self._OUTPUT_TEXT = f"Количество правильных ответов: {correct_quest_answers}.\n"
+            self._OUTPUT_TEXT += f"Количество неправильных ответов: {wrong_quest_answers}.\n"
+            python_knowledge = calculate_python_knowledge (correct_quest_answers, wrong_quest_answers)
+            self._OUTPUT_TEXT += f"Ваше знание Python: {python_knowledge}%."
+            self._make_all_sessional_data_false ( )
+            self._SESSIONAL_DATA["viewing_quest_results"] = True
+            self._BUTTONS.add_buttons ("Продолжить квест", "На главное меню", "Пока", hide_all = True)
 
+        elif not correct_quest_answers and wrong_quest_answers:
+            self._OUTPUT_TEXT = "Жаль, но у вас нет ни одного правильного ответа на квест."
+            self._make_all_sessional_data_false ( )
+            self._SESSIONAL_DATA["viewing_quest_results"] = True
+            self._BUTTONS.add_buttons ("Продолжить квест", "На главное меню", "Пока", hide_all = True)
 
-    @property
-    def _buttons_for_next_quest_or_changing_difficulty_level (self) -> dict:
-        return create_buttons ("Следующий квест", "Сменить уровень сложности",
-                               "На главное меню", "Пока!")
+        elif correct_quest_answers and not wrong_quest_answers:
+            self._OUTPUT_TEXT = "Все ваши ответы верны! Похоже, вы профессиональный программист!"
+            self._make_all_sessional_data_false ( )
+            self._SESSIONAL_DATA["viewing_quest_results"] = True
+            self._BUTTONS.add_buttons ("Продолжить квест", "На главное меню", "Пока", hide_all = True)
+
+        else:
+            self._OUTPUT_TEXT = "Пока вы не ответили ни на один квест."
+            self._make_all_sessional_data_false ( )
+            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
+
 
     def _wrong_answer_of_quest_is_selected (self) -> None:
         self._OUTPUT_TEXT = get_text_that_says_answer_is_wrong ( )
         self._SESSIONAL_DATA["number_of_wrong_quest_answers"] += 1
-        self._BUTTONS = self._buttons_for_choosing_correct_answer
+        self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
 
     def _viewing_quest_results (self) -> None:
@@ -386,7 +410,7 @@ class HandlerOfAlisa:
             current_difficulty_level = self._SESSIONAL_DATA["difficulty_level"]
             self._save_text_and_correct_answer_of_quest_in_session_data (current_difficulty_level)
             self._OUTPUT_TEXT = self._get_text_of_current_quest ( )
-            self._BUTTONS = self._buttons_for_choosing_correct_answer
+            self._BUTTONS.add_buttons (*self._buttons_for_choosing_correct_answer, hide_all = True)
 
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
@@ -396,12 +420,12 @@ class HandlerOfAlisa:
 
         else:
             self._OUTPUT_TEXT = get_apology_text ( )
-            self._BUTTONS = create_buttons ("Продолжить квест", "На главное меню", "Пока")
+            self._BUTTONS.add_buttons ("Продолжить квест", "На главное меню", "Пока", hide_all = True)
 
 
     def _sending_report (self) -> None:
         # Доработать  # FIXME
-        self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+        self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
         if self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
         elif self._user_wants_to_end_session:
@@ -412,7 +436,7 @@ class HandlerOfAlisa:
 
     def _consulting (self) -> None:
         # Доработать  # FIXME
-        self._BUTTONS = create_buttons ("На главное меню", "Пока!")
+        self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
         if self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
         elif self._user_wants_to_end_session:
@@ -422,12 +446,14 @@ class HandlerOfAlisa:
 
 
     def _has_all_words_in_text_in_lower (self, *words) -> bool:
+        """Есть ли все слова в ответе пользователя?"""
         for word in words:
             if not word in self._WORDS_OF_TEXT_IN_LOWER:
                 return False
         return True
 
     def _has_one_word_in_text_in_lower (self, *words) -> bool:
+        """Есть ли хоть одно слово в ответе пользователя?"""
         for word in words:
             if word in self._WORDS_OF_TEXT_IN_LOWER:
                 return True
@@ -436,7 +462,9 @@ class HandlerOfAlisa:
 
     def _go_to_main_menu (self) -> None:
         self._OUTPUT_TEXT = get_text_that_says_user_is_just_in_main_menu ( )
-        self._BUTTONS = create_buttons_of_main_menu ( )
+        self._TEXT_TO_SPEECH = get_text_that_says_user_is_just_in_main_menu ( )
+        self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
+        self._BUTTONS.add_buttons_of_main_menu_in_text ( )
         self._make_all_sessional_data_false ( )
 
     def _make_all_sessional_data_false (self) -> None:
@@ -458,7 +486,7 @@ class HandlerOfAlisa:
                 "text": self._OUTPUT_TEXT,
                 "tts": self._TEXT_TO_SPEECH,
                 "end_session": self._IS_END_SESSION,
-                "buttons": self._BUTTONS},
+                "buttons": self._BUTTONS.BUTTONS},
             "session_state": self._SESSIONAL_DATA,
             "user_state_update": self._INTERSESSIONAL_DATA
             }
