@@ -7,6 +7,7 @@ from lesson_getter import LessonGetter
 from task_getter import TaskGetter
 from buttons import Buttons
 from enums import *
+from consultant import ArtificialIntelligence
 
 from typing import Literal
 
@@ -100,7 +101,11 @@ class HandlerOfAlisa:
             self._TEXT_TO_SPEECH += ", ".join (self._difficulty_levels_of_course)
             self._BUTTONS.add_buttons (*self._difficulty_levels_of_course, hide_all = False)
             self._BUTTONS.add_buttons ("Узнать мои результаты", "На главное меню", "Пока", hide_all = True)
-
+        elif self._has_one_word_in_text_in_lower(
+            "консультант", "консультанту", "консультанта", "консультанты", "консультанте", "консультация", "консультацию", "консультации", "консультацией", "консультантом"
+        ):
+            self._SESSIONAL_DATA["state"] = "consulting"
+            self._OUTPUT_TEXT = "Я готова подобрать вам справку по теме вашей проблемы. С чем вам помочь?\n"
         elif self._has_one_word_in_text_in_lower (
                 "квест", "квеста", "квесту", "квестом", "квесте",
                 "квесты", "квестов", "квестам", "квестами", "квестах"):
@@ -614,23 +619,16 @@ class HandlerOfAlisa:
     def _sending_report (self) -> None:
         # Доработать  # FIXME
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
-        if self._user_wants_to_go_to_main_menu:
-            self._go_to_main_menu ( )
-        elif self._user_wants_to_end_session:
-            self._end_the_session ( )
-        else:
-            self._OUTPUT_TEXT = get_apology_text ( )
+        self._WORDS_OF_TEXT_IN_LOWER
 
 
     def _consulting (self) -> None:
         # Доработать  # FIXME
+
+        ai = ArtificialIntelligence("lessons.json")
+
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
-        if self._user_wants_to_go_to_main_menu:
-            self._go_to_main_menu ( )
-        elif self._user_wants_to_end_session:
-            self._end_the_session ( )
-        else:
-            self._OUTPUT_TEXT = get_apology_text ( )
+        self._OUTPUT_TEXT = "Итак, я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(self._WORDS_OF_TEXT_IN_LOWER)
 
 
     def _has_all_words_in_text_in_lower (self, *words) -> bool:
