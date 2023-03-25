@@ -2,7 +2,7 @@ import json
 import random
 
 from typing import Literal
-from enums import DifficultyLevelsOfQuest
+from enums import DifficultyLevels
 
 
 class QuestGetter:
@@ -26,11 +26,11 @@ class QuestGetter:
         self._create_empty_grouped_quests ( )
         for key in self.all_quests.keys():
             match self.all_quests[key]["difficulty_level"]:
-                case DifficultyLevelsOfQuest.EASY.value:
+                case DifficultyLevels.EASY.value:
                     self.easy_quests.append (self.all_quests[key])
-                case DifficultyLevelsOfQuest.MEDIUM.value:
+                case DifficultyLevels.MEDIUM.value:
                     self.medium_quests.append (self.all_quests[key])
-                case DifficultyLevelsOfQuest.HARD.value:
+                case DifficultyLevels.HARD.value:
                     self.hard_quests.append (self.all_quests[key])
                 case _:
                     raise ValueError ("Указан неверный уровень сложности " +
