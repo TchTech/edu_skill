@@ -101,5 +101,23 @@
         ", вы многому научились!",
         ", вы большой молодец!",
         ", вы просто молодец!"
+    ],
+    "win_sounds": [
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/3868d418-5214-4e14-a496-84d42ec95821.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/867d74b0-f332-4eca-87bf-9a3acbe22796.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/37309513-f08f-45ef-bfab-a0bb71f66672.opus\">"
+    ],
+    "lose_sounds": [
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/88b29846-cd79-45ca-86d9-e787d5892c80.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/7257b146-364e-4906-81ad-01b001e5293f.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/4809c89e-2ea9-495d-982d-e5bcaf1d3073.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/228030c5-84c1-424f-ae0a-dddb2588499a.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/ce5bb02a-9d85-4d83-be83-86068825c749.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/7195bd7e-f5ff-4850-95da-315b53a29a0f.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/7e086fca-6896-4913-b777-6539f4f5be21.opus\">",
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/55e262b4-602b-4ef4-b316-5d74080a4d9a.opus\">"
+    ],
+    "sound_of_looking_results": [
+        "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/8cd8495a-07ff-4047-aeef-5362b302c99a.opus\">"
     ]
 }
