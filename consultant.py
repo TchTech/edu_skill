@@ -20,5 +20,5 @@ class ArtificialIntelligence:
         return self.base[index_of_max(list(cosine_similarity(query_tfidf, self.docs_tfidf).flatten()))]
 
 # q = input()
-# a = ArtificialIntelligence("course.json")
+# a = ArtificialIntelligence("lessons.json")
 # print("Найдено:", a.get_similarity(q))

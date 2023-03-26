@@ -619,7 +619,7 @@ class HandlerOfAlisa:
     def _sending_report (self) -> None:
         # Доработать  # FIXME
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
-        self._WORDS_OF_TEXT_IN_LOWER
+        # self._WORDS_OF_TEXT_IN_LOWER
 
 
     def _consulting (self) -> None:
@@ -628,7 +628,7 @@ class HandlerOfAlisa:
         ai = ArtificialIntelligence("lessons.json")
 
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
-        self._OUTPUT_TEXT = "Итак, я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(self._WORDS_OF_TEXT_IN_LOWER)
+        self._OUTPUT_TEXT = "Итак, я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(" ".join(self._WORDS_OF_TEXT_IN_LOWER))
 
 
     def _has_all_words_in_text_in_lower (self, *words) -> bool:
