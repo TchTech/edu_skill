@@ -119,5 +119,18 @@
     ],
     "sound_of_looking_results": [
         "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/8cd8495a-07ff-4047-aeef-5362b302c99a.opus\">"
+    ],
+    "big_win_pictures": [
+        "965417/7161a486d1e7e0670ec5",
+        "213044/db4371540b8acfcb6317",
+        "937455/60c021bd3b03311e07c3",
+        "213044/eb8fd3fd258b4d6f44aa",
+        "213044/33d58e43a4a48fe10a7d"
+    ],
+    "bonus_pictures": [
+        "997614/a46a6eeb5da6e2fc4082",
+        "997614/e29905186dfd5971e3d3",
+        "213044/e4dde40f438b8fded539",
+        "1540737/2fef8f86192b49200d8b"
     ]
 }

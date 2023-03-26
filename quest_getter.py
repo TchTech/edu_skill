@@ -77,7 +77,7 @@ class QuestGetter:
 
     @property
     def answers_of_random_easy_quest_as_str (self) -> list[str]:
-        return ", ".join (self.saved_random_easy_quest["answers"] )
+        return "\n".join (self.saved_random_easy_quest["answers"] )
 
     @property
     def answers_to_speech_of_random_easy_quest (self) -> list[str]:
@@ -101,7 +101,7 @@ class QuestGetter:
 
     @property
     def answers_of_random_medium_quest_as_str (self) -> list[str]:
-        return ", ".join (self.saved_random_medium_quest["answers"] )
+        return "\n".join (self.saved_random_medium_quest["answers"] )
 
     @property
     def answers_to_speech_of_random_medium_quest (self) -> list[str]:
@@ -125,7 +125,7 @@ class QuestGetter:
 
     @property
     def answers_of_random_hard_quest_as_str (self) -> list[str]:
-        return ", ".join (self.saved_random_hard_quest["answers"] )
+        return "\n".join (self.saved_random_hard_quest["answers"] )
 
     @property
     def answers_to_speech_of_random_hard_quest (self) -> list[str]:

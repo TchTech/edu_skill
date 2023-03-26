@@ -91,3 +91,10 @@ def get_random_sound_of_looking_results ( ) -> str:
 
 def get_introduction_sound ( ) -> str:
     return "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/d5cbb919-c5c1-4691-a8f5-ebdfdee3152d.opus\">"
+
+
+def get_random_win_picture ( ) -> str:
+    return random.choice (texts_for_users["big_win_pictures"])
+
+def get_random_bonus_picture ( ) -> str:
+    return random.choice (texts_for_users["bonus_pictures"])

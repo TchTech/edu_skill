@@ -51,5 +51,3 @@ class TaskGetter:
 
 	def get_random_very_hard_task (self) -> dict[str, str]:
 		return random.choice (self.very_hard_tasks)
-	def get_random_task(self):
-		return random.choice(self.all_tasks)

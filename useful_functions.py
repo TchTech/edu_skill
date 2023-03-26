@@ -1,13 +1,12 @@
 from json_manager import *
 
 
-
-
 def create_sessional_data (sessional_data: dict) -> dict:
     if sessional_data == { }: # То есть это первое сообщение
         return {
                 "state": "in_main_menu",
-                "last_phrase": "",
+                "last_output_text": "",
+                "last_text_to_speech": "",
                 "last_buttons": [ ],
                 "text_of_quest": "",
                 "correct_answer_of_quest": 0,
