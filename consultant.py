@@ -32,7 +32,7 @@ class ArtificialIntelligence:
             p = morph.parse(word)[0]
             res.append(p.normal_form)
 
-        return res
+        return " ".join(res)
 
 # q = input()
 # a = ArtificialIntelligence("lessons.json")
