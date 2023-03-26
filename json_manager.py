@@ -78,3 +78,16 @@ def get_farewell_text ( ) -> str:
     return head_of_farewell + body_of_farewell
     # Достаётся начало прощания, например: "До свидания";
     # а потом тело прощания, например: ", хорошего дня!"
+
+
+def get_random_win_sound ( ) -> str:
+    return random.choice (texts_for_users["win_sounds"])
+
+def get_random_lose_sound ( ) -> str:
+    return random.choice (texts_for_users["lose_sounds"])
+
+def get_random_sound_of_looking_results ( ) -> str:
+    return random.choice (texts_for_users["sound_of_looking_results"])
+
+def get_introduction_sound ( ) -> str:
+    return "<speaker audio=\"dialogs-upload/5cef3ba2-6ab9-4297-8e09-176c9297e1b1/d5cbb919-c5c1-4691-a8f5-ebdfdee3152d.opus\">"
