@@ -1,6 +1,8 @@
 from json_manager import *
 
 
+
+
 def create_sessional_data (sessional_data: dict) -> dict:
     if sessional_data == { }: # То есть это первое сообщение
         return {

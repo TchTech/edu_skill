@@ -11,6 +11,41 @@ from consultant import ArtificialIntelligence
 
 from typing import Literal
 
+def code_to_speech(code: str) -> str:
+    REPLACEMENTS = {
+        ")": " скобка закрывается ",
+        "(": " скобка открывается ",
+        "*": " звёздочка ",
+        "'": " кавычки ",
+        '"': " кавычки ",
+        "{": " фигурная скобка открывается ",
+        "}": " фигурная скобка закрывается ",
+        ":": " двоеточие ",
+        "!": " восклицательный знак ",
+        ".": " точка ",
+        ",": " запятая ",
+        "[": " квадратная скобка открывается ",
+        "]": " квадратная скобка закрывается ",
+        "||": " две вертикальные линии (операция или) ",
+        ">": " больше ",
+        "<": " меньше ",
+        "/": " разделить ",
+        "-": " минус ",
+        "+": " плюс ",
+        "%": " процент ",
+        "@": " собачка ",
+        "&": " амперсанд "
+    }
+    
+    PAUSE = "sil <[250]>"
+    lines = code.split("\n")
+    formatted_lines = []
+    for i, line in enumerate(lines, start=1):
+        formatted_line = line
+        for k in REPLACEMENTS.keys():
+            formatted_line = formatted_line.replace(k, REPLACEMENTS[k])
+        formatted_lines.append(f"{PAUSE} строка {i} {PAUSE} {formatted_line}")
+    return "\n".join(formatted_lines) + PAUSE
 
 class HandlerOfAlisa:
     def __init__ (self, request: dict):
@@ -168,8 +203,6 @@ class HandlerOfAlisa:
                 self._start_next_lesson_or_not ( )
             case "working_with_tasks":
                 self._working_with_tasks ( )
-            case "choosing_right_answer_for_task":
-                self._choosing_right_answer_for_task ( )
             case "working_with_quest":
                 self._working_with_quest ( )
             case "choosing_right_answer_for_quest":
@@ -178,6 +211,12 @@ class HandlerOfAlisa:
                 self._viewing_quest_results ( )
             case "sending_report":
                 self._sending_report ( )
+            case "choosing_between_solve_and_code":
+                self._choosing_between_solve_and_code()
+            case "wish_to_see_solve":
+                self.wish_to_see_solve()
+            case "wish_to_see_code":
+                self.wish_to_see_code()
             case "consulting":
                 self._consulting ( )
 
@@ -263,6 +302,51 @@ class HandlerOfAlisa:
         else:
             return False
 
+    def _choosing_between_solve_and_code(self) -> None:
+        entering = ["Ха! Сдаётесь?", "Сдаётесь?", "Ну что, у вас получилось?", "Что скажете?", "Уже?"]
+        a = random.choice(entering)
+        if self._has_one_word_in_text_in_lower ("решение", "решению", "реши", "решил", "ответ", "решай", "отвечай", "решении", "ответе"):
+            self._OUTPUT_TEXT = a + "\nИтак, решение: " + self._SESSIONAL_DATA["solve"] + "\nХотите услышать код решения на Python?"
+            self._SESSIONAL_DATA["state"] = "wish_to_see_code"
+        elif self._has_one_word_in_text_in_lower ("код", "коды", "кода", "скрипт", "скрипты", "скрипта", "скрипте", "коде"):
+            self._OUTPUT_TEXT = a + "\nИтак, код: " + self._SESSIONAL_DATA["code"] + "\nХотите услышать объяснение?"
+            self._TEXT_TO_SPEECH = a + "Итак код. " + code_to_speech(self._SESSIONAL_DATA["code"]) + ".Хотите услышать объяснение?"
+            self._SESSIONAL_DATA["state"] = "wish_to_see_solve"
+        elif self._user_wants_to_go_to_main_menu:
+            self._go_to_main_menu ( )
+
+        elif self._user_wants_to_end_session:
+            self._end_the_session ( )
+
+        else:
+            self._OUTPUT_TEXT = get_apology_text ( )
+
+    def wish_to_see_code(self):
+        if self._has_one_word_in_text_in_lower ("да", "ага", "давай", "поехали", "ес", "погнали", "говори", "гони"):
+            self._OUTPUT_TEXT = "Итак, код: " + self._SESSIONAL_DATA["code"] + "\nХотите ещё задачу? Тогда просто назовите желаемую сложность."
+            self._TEXT_TO_SPEECH = "итак код. " + code_to_speech(self._SESSIONAL_DATA["code"]) + ".хотите ещё задачу? Тогда просто назовите желаемую сложность."
+            self._SESSIONAL_DATA["state"] = "working_with_tasks"
+        elif self._user_wants_to_go_to_main_menu:
+            self._go_to_main_menu ( )
+
+        elif self._user_wants_to_end_session:
+            self._end_the_session ( )
+
+        else:
+            self._OUTPUT_TEXT = get_apology_text ( )
+
+    def wish_to_see_solve(self):
+        if self._has_one_word_in_text_in_lower ("да", "ага", "давай", "поехали", "ес", "погнали", "говори", "гони"):
+            self._OUTPUT_TEXT = "Итак, решение: " + self._SESSIONAL_DATA["solve"] + "\nХотите ещё задачу? Тогда просто назовите желаемую сложность."
+            self._SESSIONAL_DATA["state"] = "working_with_tasks"
+        elif self._user_wants_to_go_to_main_menu:
+            self._go_to_main_menu ( )
+
+        elif self._user_wants_to_end_session:
+            self._end_the_session ( )
+
+        else:
+            self._OUTPUT_TEXT = get_apology_text ( )
 
     def _user_has_not_listened_to_any_lesson (self) -> None:
         self._OUTPUT_TEXT = "Вы ещё не прошли ни одного урока.\n"
@@ -351,23 +435,32 @@ class HandlerOfAlisa:
         if self._has_one_word_in_text_in_lower (
                 "лёгкий", "лёгкого", "лёгкому", "лёгким", "лёгком",
                 "легкий", "легкого", "легкому", "легким", "легком"):
-            self._OUTPUT_TEXT = random.choice (("Хорошо, ", "Отлично, ", "Прекрасно, ")) + "тогда начнём?\n"
             self._SESSIONAL_DATA["difficulty_level_of_task"] = DifficultyLevels.EASY.value
             self._SESSIONAL_DATA["state"] = "choosing_between_solve_and_code"
+            self._save_text_and_solve_of_easy_task_in_session_data()
+            a = ['Хорошо', 'Итак', "Отлично", "Так-с", "Ага", "Замечательно", "Супер"]
+            self._OUTPUT_TEXT = random.choice(a)+", давайте приступим. Задача называется \""+self._SESSIONAL_DATA["title"]+"\".\nЧитаю условие: \""+self._SESSIONAL_DATA["task_text"]+"\"\nПопробуйте решить сами. Если захотите услышать решение или код, просто скажите мне \"Решение\" или \"Код\"."
+
 
         elif self._has_one_word_in_text_in_lower (
                 "средний", "среднего", "среднему", "среднем",
                 "средняя", "средней", "среднюю"):
-            self._OUTPUT_TEXT = random.choice (("Хорошо, ", "Отлично, ", "Прекрасно, ")) + "тогда начнём?\n"
             self._SESSIONAL_DATA["difficulty_level_of_task"] = DifficultyLevels.MEDIUM.value
             self._SESSIONAL_DATA["state"] = "choosing_between_solve_and_code"
+            self._save_text_and_solve_of_medium_task_in_session_data()
+            a = ['Хорошо', 'Итак', "Отлично", "Так-с", "Ага", "Замечательно", "Супер"]
+            self._OUTPUT_TEXT = random.choice(a)+", давайте приступим. Задача называется \""+self._SESSIONAL_DATA["title"]+"\".\nЧитаю условие: \""+self._SESSIONAL_DATA["task_text"]+"\"\nПопробуйте решить сами. Если захотите услышать решение или код, просто скажите мне \"Решение\" или \"Код\"."
+
 
         elif self._has_one_word_in_text_in_lower (  
                 "высокий", "высокого", "высокому", "высоким", "высоком",
                 "сложный", "сложного", "сложному", "сложным", "сложном"):
-            self._OUTPUT_TEXT = random.choice (("Хорошо, ", "Отлично, ", "Прекрасно, ")) + "тогда начнём?\n"
             self._SESSIONAL_DATA["difficulty_level_of_task"] = DifficultyLevels.HARD.value
             self._SESSIONAL_DATA["state"] = "choosing_between_solve_and_code"
+            self._save_text_and_solve_of_hard_task_in_session_data()
+            a = ['Хорошо', 'Итак', "Отлично", "Так-с", "Ага", "Замечательно", "Супер"]
+            self._OUTPUT_TEXT = random.choice(a)+", давайте приступим. Задача называется \""+self._SESSIONAL_DATA["title"]+"\".\nЧитаю условие: \""+self._SESSIONAL_DATA["task_text"]+"\"\nПопробуйте решить сами. Если захотите услышать решение или код, просто скажите мне \"Решение\" или \"Код\"."
+
 
         elif self._has_one_word_in_text_in_lower (
                 "случайный", "случайного", "случайному", "случайным", "случайном",
@@ -375,9 +468,11 @@ class HandlerOfAlisa:
                 "рандом", "рандома", "рандому", "рандомом", "рандоме",
                 "рандомный", "рандомного", "рандомному", "рандомном",
                 "рандомная", "рандомной", "рандомную"):
-            self._OUTPUT_TEXT = random.choice (("Хорошо, ", "Отлично, ", "Прекрасно, ")) + "\n"
             self._SESSIONAL_DATA["difficulty_level_of_task"] = DifficultyLevels.get_random_difficulty_level_for_task ( )
             self._SESSIONAL_DATA["state"] = "choosing_between_solve_and_code"
+            self._save_text_and_solve_of_random_task_in_session_data()
+            a = ['Хорошо', 'Итак', "Отлично", "Так-с", "Ага", "Замечательно", "Супер"]
+            self._OUTPUT_TEXT = random.choice(a)+", давайте приступим. Задача называется \""+self._SESSIONAL_DATA["title"]+"\".\nЧитаю условие: \""+self._SESSIONAL_DATA["task_text"]+"\"\nПопробуйте решить сами. Если захотите услышать решение или код, просто скажите мне \"Решение\" или \"Код\"."
 
         elif self._has_one_word_in_text_in_lower ("результат", "результаты"):
             pass
@@ -392,6 +487,13 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT = get_apology_text ( )
             self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
 
+    def _save_text_and_solve_of_random_task_in_session_data(self):
+        task_getter = TaskGetter ( )
+        task = task_getter.get_random_task ( )
+        self._SESSIONAL_DATA["title"] = task["title"]
+        self._SESSIONAL_DATA["text_of_task"] = task["task_text"]
+        self._SESSIONAL_DATA["solve"] = task["solve"]
+        self._SESSIONAL_DATA["code"] = task["code"]
 
     def _choosing_right_answer_for_task (self) -> None:
         # FIXME
@@ -476,6 +578,38 @@ class HandlerOfAlisa:
         self._SESSIONAL_DATA["text_of_quest"] = quest_getter.prepared_text_of_random_hard_quest
         self._SESSIONAL_DATA["correct_answer_of_quest"] = quest_getter.correct_answer_of_random_hard_quest
         #self._TEXT_TO_SPEECH = quest_getter.answers_to_speech_of_random_hard_quest_as_str
+
+    def _save_text_and_solve_of_easy_task_in_session_data (self) -> None:
+        task_getter = TaskGetter ( )
+        task = task_getter.get_random_easy_task ( )
+        self._SESSIONAL_DATA["title"] = task["title"]
+        self._SESSIONAL_DATA["text_of_task"] = task["task_text"]
+        self._SESSIONAL_DATA["solve"] = task["solve"]
+        self._SESSIONAL_DATA["code"] = task["code"]
+
+    def _save_text_and_solve_of_medium_task_in_session_data (self) -> None:
+        task_getter = TaskGetter ( )
+        task = task_getter.get_random_medium_task ( )
+        self._SESSIONAL_DATA["title"] = task["title"]
+        self._SESSIONAL_DATA["text_of_task"] = task["task_text"]
+        self._SESSIONAL_DATA["solve"] = task["solve"]
+        self._SESSIONAL_DATA["code"] = task["code"]
+
+    def _save_text_and_solve_of_hard_task_in_session_data (self) -> None:
+        task_getter = TaskGetter ( )
+        task = task_getter.get_random_hard_task ( )
+        self._SESSIONAL_DATA["title"] = task["title"]
+        self._SESSIONAL_DATA["text_of_task"] = task["task_text"]
+        self._SESSIONAL_DATA["solve"] = task["solve"]
+        self._SESSIONAL_DATA["code"] = task["code"]
+
+    def _save_text_and_solve_of_very_hard_task_in_session_data (self) -> None:
+        task_getter = TaskGetter ( )
+        task = task_getter.get_random_very_hard_task ( )
+        self._SESSIONAL_DATA["title"] = task["title"]
+        self._SESSIONAL_DATA["text_of_task"] = task["task_text"]
+        self._SESSIONAL_DATA["solve"] = task["solve"]
+        self._SESSIONAL_DATA["code"] = task["code"]
 
     def _save_text_and_correct_answer_of_quest_in_session_data (self, difficulty_level: int) -> None:
         match difficulty_level:
