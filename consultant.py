@@ -16,9 +16,13 @@ class ArtificialIntelligence:
         self.vectorizer = TfidfVectorizer()
         self.docs_tfidf = self.vectorizer.fit_transform(self.base)
     def get_similarity(self, query):
+        query = self.filter_of_query(query)
         query_tfidf = self.vectorizer.transform([query])
         return self.base[index_of_max(list(cosine_similarity(query_tfidf, self.docs_tfidf).flatten()))]
+    def filter_of_query(self, query):
+        stop_words = ["не", "без", "через", "у", "но", "о", "и", "как", "python", "а", "к", "в", "с", "за", "или", "либо", "же", "ж", "совсем", "ничуть", "отнюдь", "перед", "при", "про", "под", "по", "до", "чуть", "чуть-чуть"]
+        return " ".join([i for i in query.split(" ") if not i in stop_words])
 
-# q = input()
-# a = ArtificialIntelligence("lessons.json")
-# print("Найдено:", a.get_similarity(q))
+q = input()
+a = ArtificialIntelligence("lessons.json")
+print("Найдено:", a.get_similarity(q))
