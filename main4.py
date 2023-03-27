@@ -7,7 +7,7 @@ from lesson_getter import LessonGetter
 from task_getter import TaskGetter
 from buttons import Buttons
 from enums import *
-
+from consultant import ArtificialIntelligence
 from typing import Literal
 
 
@@ -99,7 +99,11 @@ class HandlerOfAlisa:
             self._OUTPUT_TEXT += "можете продолжить последнюю или переслушать текущую."
             self._BUTTONS.add_buttons (*self._commands_of_course, hide_all = False)
             self._BUTTONS.add_buttons ("Повтори", hide_all = True)
-
+        elif self._has_one_word_in_text_in_lower(
+            "консультант", "консультанту", "консультанта", "консультанты", "консультанте", "консультация", "консультацию", "консультации", "консультацией", "консультантом"
+        ):
+            self._SESSIONAL_DATA["state"] = "consulting"
+            self._OUTPUT_TEXT = "Я готова подобрать вам справку по теме вашей проблемы. С чем вам помочь?\n"
         elif self._has_one_word_in_text_in_lower (
                 "задачка", "задачки", "задачку", "задачке", "задачкой",
                 "задача", "задачи", "задачу", "задаче", "задачей",
@@ -126,14 +130,6 @@ class HandlerOfAlisa:
                 "пожаловаться", "жалоба", "жалобу", "отчёт", "отчет"):
             self._SESSIONAL_DATA["state"] = "sending_report"
             self._OUTPUT_TEXT = "Я не знаю, на какую почту отправлять жалобу...\n"
-            self._OUTPUT_TEXT += "Может, на главное меню?"
-            self._BUTTONS.add_buttons ("На главное меню", "Повтори", "Пока!", hide_all = True)
-
-        elif self._has_one_word_in_text_in_lower (
-                "консультант", "консультанта", "консультанту", "консультантом", "консультанте"
-                "консультация", "консультации", "консультацию", "консультацией", "проконсультируй"):
-            self._SESSIONAL_DATA["state"] = "consulting"
-            self._OUTPUT_TEXT = "Пока я не могу вас проконсультировать, извините...\n"
             self._OUTPUT_TEXT += "Может, на главное меню?"
             self._BUTTONS.add_buttons ("На главное меню", "Повтори", "Пока!", hide_all = True)
 
@@ -844,17 +840,11 @@ class HandlerOfAlisa:
 
 
     def _consulting (self) -> None:
-        # Доработать  # FIXME
+        ai = ArtificialIntelligence("lessons.json")
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
-        if self._user_wants_to_go_to_main_menu:
-            self._go_to_main_menu ( )
-
-        elif self._user_wants_to_hear_last_phrase:
-            self._say_last_phrase ( )
-        elif self._user_wants_to_end_session:
-            self._end_the_session ( )
-        else:
-            self._OUTPUT_TEXT = get_apology_text ( )
+        a = ["Хм...", "Ага...", "Итак,", "Хорошо,", "Смотрите,"]
+        self._OUTPUT_TEXT = random.choice(a)+" я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(" ".join(self._WORDS_OF_TEXT_IN_LOWER) + "\nКуда теперь?")
+        self._SESSIONAL_DATA['state'] = "in_main_menu"
 
 
     def _has_all_words_in_text_in_lower (self, *words) -> bool:
