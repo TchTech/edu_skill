@@ -22,7 +22,6 @@ class TaskGetter:
 		self.easy_tasks = [ ]
 		self.medium_tasks = [ ]
 		self.hard_tasks = [ ]
-		self.very_hard_tasks = [ ]
 
 	def _group_tasks (self) -> None:
 		for task_number in self.all_tasks.keys():
@@ -34,8 +33,6 @@ class TaskGetter:
 					self.medium_tasks.append (task)
 				case DifficultyLevels.HARD.value:
 					self.hard_tasks.append (task)
-				case DifficultyLevels.VERY_HARD.value:
-					self.very_hard_tasks.append (task)
 				case _:
 					raise ValueError (f"Неправильно задана сложность квеста №{task_number}!")
 
@@ -49,5 +46,10 @@ class TaskGetter:
 	def get_random_hard_task (self) -> dict[str, str]:
 		return random.choice (self.hard_tasks)
 
-	def get_random_very_hard_task (self) -> dict[str, str]:
-		return random.choice (self.very_hard_tasks)
+	def get_random_task (self) -> dict[str, str]:
+		func_calls = [
+			self.get_random_easy_task,
+			self.get_random_medium_task,
+			self.get_random_hard_task
+			]
+		return random.choice (func_calls)( )

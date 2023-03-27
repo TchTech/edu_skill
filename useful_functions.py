@@ -8,6 +8,7 @@ def create_sessional_data (sessional_data: dict) -> dict:
                 "last_output_text": "",
                 "last_text_to_speech": "",
                 "last_buttons": [ ],
+                "last_card": { },
                 "text_of_quest": "",
                 "correct_answer_of_quest": 0,
                 "difficulty_level_of_quest": 0,
@@ -47,7 +48,7 @@ def get_user_greeting ( ) -> str:
 
 
 def get_text_that_says_user_is_just_in_main_menu ( ) -> str:
-    return "Вы на главном меню!\nМои основные команды:"
+    return "Вы на главном меню!"
 
 
 def create_buttons (*button_texts: str) -> list[dict]:
@@ -78,3 +79,78 @@ def calculate_python_knowledge (number_of_correct_answers: int,
         python_knowledge = number_of_correct_answers / (number_of_correct_answers + number_of_wrong_answers) * 100
 
     return round (python_knowledge, 1)
+
+
+def code_to_speech(code: str) -> str:
+    """Переводит код в слова и выводит готовый текст в пронумерованном столбце."""
+    REPLACEMENTS: dict = _get_replacements ( )
+    
+    PAUSE = "sil <[250]>"
+    lines = code.split("\n")
+    formatted_lines = [ ]
+    for i, line in enumerate(lines, start=1):
+        formatted_line = line
+        for key in REPLACEMENTS.keys():
+            formatted_line = formatted_line.replace(key, REPLACEMENTS[key])
+        formatted_lines.append(f"{PAUSE} строка {i} {PAUSE} {formatted_line}")
+    return "\n".join(formatted_lines) + PAUSE
+
+def _get_replacements ( ) -> dict:
+    """Возвращает словарь с заменами символов на слова."""
+    return {
+        ")": " скобка закрывается ",
+        "(": " скобка открывается ",
+        "*": " звёздочка ",
+        "'": " кавычки ",
+        '"': " кавычки ",
+        "{": " фигурная скобка открывается ",
+        "}": " фигурная скобка закрывается ",
+        ":": " двоеточие ",
+        "!": " восклицательный знак ",
+        ".": " точка ",
+        ",": " запятая ",
+        "[": " квадратная скобка открывается ",
+        "]": " квадратная скобка закрывается ",
+        "||": " две вертикальные линии (операция или) ",
+        ">": " больше ",
+        "<": " меньше ",
+        "/": " разделить ",
+        "-": " минус ",
+        "+": " плюс ",
+        "%": " процент ",
+        "@": " собачка ",
+        "&": " амперсанд "
+    }
+
+
+def make_big_win_picture (title: str, description: str = "") -> dict:
+    return {
+        "type": "BigImage",
+        "image_id": get_random_win_picture ( ),
+        "title": title,
+        "description": description
+    }
+
+def make_big_level_up_picture (title: str, description: str = "") -> dict:
+    return {
+        "type": "BigImage",
+        "image_id": get_random_level_up_picture ( ),
+        "title": title,
+        "description": description
+    }
+
+def make_big_looking_results_picture (title: str, description: str = "") -> dict:
+    return {
+        "type": "BigImage",
+        "image_id": get_random_looking_results_pictures ( ),
+        "title": title,
+        "description": description
+    }
+
+def make_big_farewell_picture (title: str, description: str = "") -> dict:
+    return {
+        "type": "BigImage",
+        "image_id": get_random_farewell_picture ( ),
+        "title": title,
+        "description": description
+    }

@@ -1,34 +1,41 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 
 
-# Написано ChatGPT
 class EmailSender:
-    def __init__(self, email: str, password: str):
+    def __init__(self, email, password, smtp_server='smtp.gmail.com', smtp_port=587):
         self.email = email
         self.password = password
+        self.smtp_server = smtp_server
+        self.smtp_port = smtp_port
+        self.server = None
 
-    def send_email(self, to_email: str, theme: str, text: str, attachment=None):
-        """Отправляет сообщение на указанную почту."""
-        msg = MIMEMultipart()
-        msg['From'] = self.email
-        msg['To'] = to_email
-        msg['Subject'] = theme
+    def login(self):
+        try:
+            self.server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            self.server.starttls()
+            self.server.login(self.email, self.password)
+            print('Logged in successfully.')
+        except Exception as e:
+            print(f'Error: Could not login to the email server.\n{e}')
 
-        msg.attach(MIMEText(text, 'plain'))
+    def send_email(self, to_addr, subject, body):
+        if self.server is None:
+            self.login()
+        from_addr = self.email
+        message = MIMEMultipart()
+        message['From'] = from_addr
+        message['To'] = to_addr
+        message['Subject'] = subject
+        message.attach(MIMEText(body, 'plain'))
+        try:
+            self.server.sendmail(from_addr, to_addr, message.as_string())
+            print(f'Sent email to {to_addr} with subject "{subject}" and message: {body}')
+        except Exception as e:
+            print(f'Error: Could not send email.\n{e}')
 
-        if attachment:
-            with open(attachment, 'rb') as f:
-                file_data = f.read()
-                part = MIMEApplication(file_data)
-                part.add_header('Content-Disposition', f'attachment; filename="{attachment}"')
-                msg.attach(part)
 
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(self.email, self.password)
-        text = msg.as_string()
-        server.sendmail(self.email, to_email, text)
-        server.quit()
+if __name__ == '__main__':
+    email_sender = EmailSender ("leha.bondar.05@mail.ru", "Sstrelo4gGvip")
+    email_sender.send_email ("leha.bondar.05@mail.ru", "Test message", "Test text...")

@@ -179,6 +179,7 @@ class HandlerOfAlisa:
         self._OUTPUT_TEXT = self._SESSIONAL_DATA["last_output_text"]
         self._TEXT_TO_SPEECH = self._SESSIONAL_DATA["last_text_to_speech"]
         self._BUTTONS.BUTTONS = self._SESSIONAL_DATA["last_buttons"]
+        self._CARD = self._SESSIONAL_DATA["last_card"]
 
 
     @save_last_phrase
@@ -715,6 +716,7 @@ class HandlerOfAlisa:
 
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
+
         elif self._user_wants_to_end_session:
             self._end_the_session ( )
         else:

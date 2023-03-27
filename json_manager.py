@@ -94,7 +94,13 @@ def get_introduction_sound ( ) -> str:
 
 
 def get_random_win_picture ( ) -> str:
-    return random.choice (texts_for_users["big_win_pictures"])
+    return random.choice (texts_for_users["win_pictures"])
 
-def get_random_bonus_picture ( ) -> str:
-    return random.choice (texts_for_users["bonus_pictures"])
+def get_random_looking_results_pictures ( ) -> str:
+    return random.choice (texts_for_users["looking_results_pictures"])
+
+def get_random_level_up_picture ( ) -> str:
+    return random.choice (texts_for_users["level_up_pictures"])
+
+def get_random_farewell_picture ( ) -> str:
+    return random.choice (texts_for_users["farewell_pictures"])
