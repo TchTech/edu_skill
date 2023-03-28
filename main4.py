@@ -49,7 +49,7 @@ class HandlerOfAlisa:
         if self._INTERSESSIONAL_DATA["new_user"]:
             self._OUTPUT_TEXT = get_text_for_new_user ( )
             self._TEXT_TO_SPEECH = get_introduction_sound ( ) + get_text_for_new_user ( ) + "\n"
-            self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
+            #self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
             self._INTERSESSIONAL_DATA["new_user"] = False
             self._BUTTONS.add_buttons_of_main_menu_in_text ( )
 
@@ -58,7 +58,7 @@ class HandlerOfAlisa:
             user_greeting = get_user_greeting ( )
             self._OUTPUT_TEXT = user_greeting
             self._TEXT_TO_SPEECH = get_introduction_sound ( ) + user_greeting
-            self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
+            #self._TEXT_TO_SPEECH += get_main_commands_of_skill ( )
             self._BUTTONS.add_buttons_of_main_menu_in_text ( )
 
         # Пользователь просто в главном меню
@@ -125,8 +125,7 @@ class HandlerOfAlisa:
         elif self._has_one_word_in_text_in_lower (
                 "пожаловаться", "жалоба", "жалобу", "отчёт", "отчет"):
             self._SESSIONAL_DATA["state"] = "sending_report"
-            self._OUTPUT_TEXT = "Я не знаю, на какую почту отправлять жалобу...\n"
-            self._OUTPUT_TEXT += "Может, на главное меню?"
+            self._OUTPUT_TEXT = "Чтобы отправить отчёт разработчикам навыка, просто скажите его. Я вас внимательно слушаю."
             self._BUTTONS.add_buttons ("На главное меню", "Повтори", "Пока!", hide_all = True)
 
         elif self._has_one_word_in_text_in_lower (
@@ -138,12 +137,19 @@ class HandlerOfAlisa:
             self._BUTTONS.add_buttons ("На главное меню", "Повтори", "Пока!", hide_all = True)
 
         elif self._user_needs_help:
-            self._OUTPUT_TEXT = "Сейчас я вам помогу. В главном меню есть следующие команды: "
-            self._TEXT_TO_SPEECH = self._OUTPUT_TEXT + get_main_commands_of_skill ( )
-            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
+            self._OUTPUT_TEXT = "Всегда к вашим услугам!\nПослушайте мои функции:\n"
+            self._OUTPUT_TEXT += "Если вы хотите изучить Python, то скажите: \"Курс\".\n"
+            self._OUTPUT_TEXT += "Если хотите проверить свои теоретические знания Python, то скажите: \"Квест\".\n"
+            self._OUTPUT_TEXT += "А чтобы проверить практические знания, просто скажите: \"Задачки\".\n"
+            self._OUTPUT_TEXT += "Проговорив \"Отправить отчёт\", вы сможете отправить письмо разработчикам навыка."
+            self._OUTPUT_TEXT += "И сказав \"Консультант\", вы сможете получить ответ на заданный вопрос."
+            self._OUTPUT_TEXT += "Если вам что-то не понятно, то моя команда \"Помощь\" к вашим услугам.\n"
 
         elif self._user_wants_to_go_to_main_menu:
             self._OUTPUT_TEXT = "Вы уже на главном меню!"
+
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
 
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
@@ -182,6 +188,17 @@ class HandlerOfAlisa:
         self._BUTTONS.BUTTONS = self._SESSIONAL_DATA["last_buttons"]
         self._CARD = self._SESSIONAL_DATA["last_card"]
 
+    @property
+    def _user_wants_to_know_what_skill_can_do (self) -> bool:
+        if self._has_all_words_in_text_in_lower ("что", "умеешь"):
+            return True
+        else:
+            return False
+
+    def _say_what_skill_can_do (self) -> None:
+        self._OUTPUT_TEXT = get_text_that_says_what_skill_can_do ( )
+        self._BUTTONS.BUTTONS = self._SESSIONAL_DATA["last_buttons"]
+
 
     @save_last_phrase
     def _working_with_user_outside_main_menu (self) -> None:
@@ -206,8 +223,8 @@ class HandlerOfAlisa:
                 self._choosing_between_solve_and_code()
             case "_wish_to_see_solve":
                 self._wish_to_see_solve()
-            case "_wish_to_see_solve":
-                self._wish_to_see_solve()
+            case "_wish_to_see_code":
+                self._wish_to_see_code()
             case "consulting":
                 self._consulting ( )
 
@@ -281,6 +298,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
 
@@ -323,6 +343,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
 
@@ -344,6 +367,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
 
@@ -363,6 +389,9 @@ class HandlerOfAlisa:
 
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
+
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
 
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
@@ -422,6 +451,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
 
@@ -466,6 +498,9 @@ class HandlerOfAlisa:
 
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
+
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
 
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
@@ -528,6 +563,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_needs_help:
             self._OUTPUT_TEXT = "Всё будет хорошо! Здесь вам нужно всего лишь выбрать уровень сложности: лёгкий, средний или высокий.\n"
             self._OUTPUT_TEXT += "Также вы можете в любой момент переслушать задачу или выйти на главное меню."
@@ -555,6 +593,9 @@ class HandlerOfAlisa:
         # FIXME
         if self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
+
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
 
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
@@ -611,6 +652,9 @@ class HandlerOfAlisa:
 
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
+
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
 
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
@@ -749,6 +793,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
 
@@ -819,6 +866,9 @@ class HandlerOfAlisa:
         elif self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
 
@@ -831,7 +881,6 @@ class HandlerOfAlisa:
 
 
     def _sending_report (self) -> None:
-        # Доработать  # FIXME
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
         if self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
@@ -840,7 +889,8 @@ class HandlerOfAlisa:
         elif self._user_wants_to_end_session:
             self._end_the_session ( )
         else:
-            self._OUTPUT_TEXT = get_apology_text ( )
+            self._OUTPUT_TEXT = "Отчёт разработчикам отправлен!\nВы на главном меню."
+            self._BUTTONS.add_buttons_of_main_menu_in_text ( )
 
 
     def _consulting (self) -> None:
@@ -849,8 +899,12 @@ class HandlerOfAlisa:
         if self._user_wants_to_go_to_main_menu:
             self._go_to_main_menu ( )
 
+        elif self._user_wants_to_know_what_skill_can_do:
+            self._say_what_skill_can_do ( )
+
         elif self._user_wants_to_hear_last_phrase:
             self._say_last_phrase ( )
+
         elif self._user_wants_to_end_session:
             self._end_the_session ( )
         else:
@@ -885,6 +939,7 @@ class HandlerOfAlisa:
         self._CARD = make_big_farewell_picture (farewell_text)
         self._OUTPUT_TEXT = farewell_text # Без этого выдаёт ошибку, что self._OUTPUT_TEXT нет
         self._TEXT_TO_SPEECH = farewell_text
+        self._TEXT_TO_SPEECH += get_random_farewell_sound ( )
         self._IS_END_SESSION = True
 
 
