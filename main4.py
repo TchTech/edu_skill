@@ -10,6 +10,56 @@ from enums import *
 from consultant import ArtificialIntelligence
 from typing import Literal
 
+def code_to_speech(code: str) -> str:
+    """Переводит код в слова и выводит готовый текст в пронумерованном столбце."""
+    REPLACEMENTS: dict = _get_replacements ( )
+    
+    PAUSE = "sil<[250]>"
+    lines = code.split("\n")
+    formatted_lines = [ ]
+    for i, line in enumerate(lines, start=1):
+        formatted_line = line
+        for key in REPLACEMENTS.keys():
+            formatted_line = formatted_line.replace(key, REPLACEMENTS[key])
+        formatted_line = formatted_line.split("#")[0]
+        formatted_lines.append(f"{PAUSE} код {PAUSE} {formatted_line}")
+    return "\n".join(formatted_lines) + PAUSE
+
+def _get_replacements ( ) -> dict:
+    """Возвращает словарь с заменами символов на слова."""
+    return {
+        ")": " скобка ",
+        "(": " скобка ",
+        "*": " звёздочка ",
+        "'": " кавычки ",
+        '"': " кавычки ",
+        "{": " фигурная скобка ",
+        "}": " фигурная скобка ",
+        ":": " двоеточие ",
+        "!": " восклицательный знак ",
+        ".": " точка ",
+        ",": " запятая ",
+        "[": " квадратная скобка ",
+        "]": " квадратная скобка ",
+        "||": " or ",
+        ">": " больше ",
+        "<": " меньше ",
+        "/": " разделить ",
+        "-": " минус ",
+        "+": " плюс ",
+        "%": " процент ",
+        "@": " собачка ",
+        "&": " and "
+    }
+
+
+def tts_format(text):
+    c = text.split("`")
+    i = 1
+    while i<len(c):
+        c[i] = code_to_speech(c[i])
+        i+=2
+    return " ".join(c)
 
 class HandlerOfAlisa:
     def __init__ (self, request: dict):
@@ -231,11 +281,13 @@ class HandlerOfAlisa:
                 next_subtheme = None
 
             if next_subtheme:
-                self._INTERSESSIONAL_DATA["current_sublesson"] = next_subtheme
-                self._OUTPUT_TEXT = lesson_getter.get_subtheme_text (theme = current_lesson_theme,
+                text = lesson_getter.get_subtheme_text (theme = current_lesson_theme,
                                                                      subtheme = next_subtheme)
+                self._INTERSESSIONAL_DATA["current_sublesson"] = next_subtheme
+                self._OUTPUT_TEXT = text
                 self._BUTTONS.add_buttons ("Продолжить", "Переслушать", "Список тем",
                                            "На главное меню", "Пока", hide_all = True)
+                self._TEXT_TO_SPEECH = tts_format(text)
             elif not next_subtheme and current_lesson_subtheme:
                 self._TEXT_TO_SPEECH = get_random_sound_of_looking_results ( )
                 self._CARD = make_big_level_up_picture (title = "Поздравляю! Вы прошли целый урок.", description = "Следующий - это " + lesson_getter.get_name_of_next_theme (current_lesson_theme) + ".\n" + "Хотите продолжить?")
@@ -843,7 +895,7 @@ class HandlerOfAlisa:
         ai = ArtificialIntelligence("lessons.json")
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
         a = ["Хм...", "Ага...", "Итак,", "Хорошо,", "Смотрите,"]
-        self._OUTPUT_TEXT = random.choice(a)+" я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(" ".join(self._WORDS_OF_TEXT_IN_LOWER) + "\nКуда теперь?")
+        self._OUTPUT_TEXT = random.choice(a)+" я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(" ".join(self._WORDS_OF_TEXT_IN_LOWER)) + "\nКуда теперь?"
         self._SESSIONAL_DATA['state'] = "in_main_menu"
 
 

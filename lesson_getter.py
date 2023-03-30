@@ -1,5 +1,9 @@
 import json
 
+# def output_format(text):
+#     c = text.split("`")
+#     text = " ".join(c)
+#     return text
 
 class LessonGetter:
 	"""Класс для работы с уроками, курсом в целом."""
@@ -26,7 +30,7 @@ class LessonGetter:
 
 	def get_subtheme_text (self, theme: str, subtheme: str) -> str:
 		"""Получить подтему указанной темы."""
-		return self.all_lessons[theme][subtheme]
+		return subtheme + ": " + self.all_lessons[theme][subtheme]
 
 	def get_name_of_next_theme (self, current_theme: str) -> str:
 		"""Получить имя следующей темы."""
