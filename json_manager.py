@@ -107,3 +107,21 @@ def get_random_level_up_picture ( ) -> str:
 
 def get_random_farewell_picture ( ) -> str:
     return random.choice (texts_for_users["farewell_pictures"])
+
+
+def get_random_lesson_completion ( ) -> str:
+    return random.choice (texts_for_users["user_has_completed_lesson"])
+
+def get_random_sequel_of_lesson ( ) -> str:
+    return random.choice (texts_for_users["ask_user_if_he_wants_to_take_next_lesson"])
+
+def get_random_course_completion ( ) -> str:
+    return random.choice (texts_for_users["user_has_completed_course"])
+
+
+def get_resume_text ( ) -> str:
+    return random.choice (texts_for_users["resume"])
+
+
+def get_soothing_text ( ) -> str:
+    return random.choice (texts_for_users["soothing_text"])

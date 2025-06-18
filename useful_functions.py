@@ -84,18 +84,18 @@ def calculate_python_knowledge (number_of_correct_answers: int,
     return round (python_knowledge, 1)
 
 
-def code_to_speech(code: str) -> str:
+def code_to_speech (code: str) -> str:
     """Переводит код в слова и выводит готовый текст в пронумерованном столбце."""
     REPLACEMENTS: dict = _get_replacements ( )
     
-    PAUSE = "sil <[250]>"
+    PAUSE = "sil<[250]>"
     lines = code.split("\n")
     formatted_lines = [ ]
     for i, line in enumerate(lines, start=1):
         formatted_line = line
         for key in REPLACEMENTS.keys():
             formatted_line = formatted_line.replace(key, REPLACEMENTS[key])
-        formatted_lines.append(f"{PAUSE} строка {i} {PAUSE} {formatted_line}")
+        formatted_lines.append(f"{PAUSE}строка{i}{PAUSE}{formatted_line}")
     return "\n".join(formatted_lines) + PAUSE
 
 def _get_replacements ( ) -> dict:
@@ -125,6 +125,14 @@ def _get_replacements ( ) -> dict:
         "&": " амперсанд "
     }
 
+
+def make_big_hello_picture (title: str, description: str = "") -> dict:
+    return {
+        "type": "BigImage",
+        "image_id": "1540737/103847d7e3468a494c6c",
+        "title": title,
+        "description": description
+    }
 
 def make_big_win_picture (title: str, description: str = "") -> dict:
     return {
