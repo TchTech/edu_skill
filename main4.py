@@ -895,7 +895,11 @@ class HandlerOfAlisa:
         ai = ArtificialIntelligence("lessons.json")
         self._BUTTONS.add_buttons ("На главное меню", "Пока!", hide_all = True)
         a = ["Хм...", "Ага...", "Итак,", "Хорошо,", "Смотрите,"]
-        self._OUTPUT_TEXT = random.choice(a)+" я нашла что-то, что может вам помочь, послушайте: " + ai.get_similarity(" ".join(self._WORDS_OF_TEXT_IN_LOWER)) + "\nКуда теперь?"
+        outpt = ai.get_similarity(" ".join(self._WORDS_OF_TEXT_IN_LOWER))
+        if outpt[1] != 0:
+            self._OUTPUT_TEXT = random.choice(a)+" я нашла что-то, что может вам помочь, послушайте: " + outpt[0] + "\nКуда теперь?"
+        else:
+            self._OUTPUT_TEXT = "Извините, я ничего не смогла найти по вашему запросу.\nКуда теперь?"
         self._SESSIONAL_DATA['state'] = "in_main_menu"
 
 
