@@ -63,6 +63,14 @@
 *   Яндекс.Диалоги
 *   Python (backend логика)
 
+## 🖼 Скриншоты
+
+<div>
+  <img src="https://github.com/TchTech/edu_skill/blob/Alexonys'-code/images/1.png" />
+  <img src="https://github.com/TchTech/edu_skill/blob/Alexonys'-code/images/2.png" />
+  <img src="https://github.com/TchTech/edu_skill/blob/Alexonys'-code/images/3.png" />
+</div>
+
 ## 🤝 Вклад
 
 Мы открыты для предложений и идей! Если у вас есть какие-либо предложения по улучшению навыка, пожалуйста, свяжитесь с нами.
